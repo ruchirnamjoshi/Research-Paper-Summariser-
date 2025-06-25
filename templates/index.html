@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Research Paper Summarizer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css">
+    <style>
+        :root {
+            --bg-color: #f7f9fb;
+            --text-color: #2c3e50;
+            --card-color: #ffffff;
+            --highlight-color: #2ecc71;
+        }
+
+        body.dark-mode {
+            --bg-color: #1e1e2f;
+            --text-color: #ffffff;
+            --card-color: #2c2c3a;
+            --highlight-color: #27ae60;
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            padding: 2rem;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: var(--card-color);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        input[type="url"], input[type="email"] {
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--highlight-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .summary-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f4f6f8;
+            border-left: 5px solid var(--highlight-color);
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .markdown-body {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .error {
+            color: #e74c3c;
+            margin-top: 1rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        #loader {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        #loader span {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            margin: 0 2px;
+            background: var(--highlight-color);
+            border-radius: 50%;
+            animation: bounce 1s infinite alternate;
+        }
+
+        #loader span:nth-child(2) { animation-delay: 0.2s; }
+        #loader span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            to { transform: translateY(-10px); }
+        }
+
+        .theme-switch {
+            float: right;
+            margin-top: -2rem;
+        }
+    </style>
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+        }
+
+        function showLoader() {
+            document.getElementById('loader').style.display = 'block';
+        }
+    </script>
+</head>
+<body>
+    <div class="theme-switch">
+        <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    </div>
+
+    <div class="container">
+        <h1>🤖 AI-Powered Research Paper Summarizer</h1>
+        <form method="POST" onsubmit="showLoader()">
+            <label for="url">Paste the URL of a research paper:</label>
+            <input type="url" name="url" placeholder="e.g., https://arxiv.org/abs/xxxx.xxxxx" value="{{ url }}" required>
+
+            <label for="email">Enter your email (optional):</label>
+            <input type="email" name="email" placeholder="e.g., name@example.com" value="{{ email }}">
+
+            <button type="submit">Generate Summary</button>
+        </form>
+
+        <div id="loader">
+            <span></span><span></span><span></span>
+            <p>Generating summary, please wait...</p>
+        </div>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if summary_html %}
+            <div class="summary-box">
+                <h2>📄 Summary:</h2>
+                <div class="markdown-body">
+                    {{ summary_html | safe }}
+                </div>
+                <form method="POST" action="/download">
+                    <input type="hidden" name="summary" value="{{ summary }}">
+                    <button type="submit">Download as PDF</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        &copy; 2025 AI Research Tool by YourName. All rights reserved.
+    </div>
+</body>
+</html>
